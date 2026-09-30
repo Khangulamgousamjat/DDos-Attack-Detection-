@@ -477,7 +477,23 @@ def create_app():
         return jsonify({'status': 'Sentinel security state successfully reset'})
 
     return app
+def _is_running_in_streamlit():
+    import sys
+    try:
+        from streamlit.runtime.scriptrunner import get_script_run_ctx
+        if get_script_run_ctx() is not None:
+            return True
+    except Exception:
+        pass
+    if 'streamlit' in sys.modules and any('streamlit' in str(arg).lower() for arg in sys.argv):
+        return True
+    return False
 
 if __name__ == '__main__':
-    app = create_app()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    if _is_running_in_streamlit():
+        from streamlit_app import run_streamlit_app
+        run_streamlit_app()
+    else:
+        port = int(os.environ.get('PORT', 5000))
+        app = create_app()
+        app.run(debug=False, host='0.0.0.0', port=port)
