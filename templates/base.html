@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DDoS Sentinel - Enterprise-grade real-time Distributed Denial of Service (DDoS) detection and mitigation pipeline using multi-model machine learning analytics.">
+    <title>DDoS Sentinel - ML Detection & Intrusion Prevention Console</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #070a13;
+            --bg-card: rgba(16, 22, 35, 0.85);
+            --border-glow: rgba(6, 182, 212, 0.2);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-amber: #f59e0b;
+            --accent-purple: #8b5cf6;
+        }
+
+        body {
+            background: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.07) 0px, transparent 50%),
+                radial-gradient(at 50% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(244, 63, 94, 0.05) 0px, transparent 50%);
+            color: var(--text-primary);
+            font-family: 'Poppins', system-ui, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(11, 15, 26, 0.8) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.8rem 2rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.45rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, var(--accent-cyan), #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-link {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary) !important;
+            transition: all 0.25s ease;
+            padding: 0.5rem 1rem !important;
+            border-radius: 6px;
+            margin: 0 2px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--text-primary) !important;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link i {
+            margin-right: 6px;
+            font-size: 0.9rem;
+        }
+
+        .system-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .system-badge span {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-emerald);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--accent-emerald);
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        footer {
+            border-top: 1px solid var(--border-color);
+            background: rgba(11, 15, 26, 0.5);
+            padding: 1.5rem 0;
+            margin-top: auto;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-transparent sticky-top" id="main-navigation">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/" id="brand-logo">
+                <i class="fa-solid fa-shield-halved text-cyan" style="color: var(--accent-cyan);"></i> DDoS Sentinel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContainer">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navContainer">
+                {% if session.get('logged_in') %}
+                <div class="navbar-nav ms-4">
+                    <a class="nav-link" href="/" id="nav-home">
+                        <i class="fa-solid fa-house-laptop"></i> Security Portal
+                    </a>
+                    <a class="nav-link" href="/dashboard" id="nav-dashboard">
+                        <i class="fa-solid fa-chart-line"></i> Active Dashboard
+                    </a>
+                </div>
+                <div class="ms-auto d-flex align-items-center">
+                    <div class="system-badge me-3" id="ips-status-badge">
+                        <span></span> IPS Core: ONLINE
+                    </div>
+                    <a class="nav-link text-rose px-3 py-1 rounded" href="/logout" id="nav-logout" style="border: 1px solid rgba(244, 63, 94, 0.2); background: rgba(244, 63, 94, 0.05); color: var(--accent-rose) !important; transition: all 0.2s ease;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content Container -->
+    <main class="container-fluid py-4 flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center" id="sentinel-footer">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 DDoS Sentinel Engine. Academic Research & Defense Application.</p>
+            <small class="text-muted">Machine Learning intrusion classifier for DDoS identification, mitigation, and policy generation.</small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Highlighting active nav link based on current path
+        document.addEventListener("DOMContentLoaded", function() {
+            const currentPath = window.location.pathname;
+            const homeLink = document.getElementById("nav-home");
+            const dashLink = document.getElementById("nav-dashboard");
+            
+            if (currentPath === "/" || currentPath === "") {
+                homeLink.classList.add("active");
+            } else if (currentPath.includes("dashboard")) {
+                dashLink.classList.add("active");
+            }
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

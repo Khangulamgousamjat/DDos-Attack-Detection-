@@ -1,0 +1,708 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row g-4 px-lg-4 animate-slide-up">
+    <!-- Header Command Bar -->
+    <div class="col-12">
+        <div class="card p-4 hero-card">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2 class="mb-1 fw-bold"><i class="fa-solid fa-terminal text-cyan"></i> Threat Monitoring & Operations Console</h2>
+                    <p class="text-secondary mb-0">ML-Driven intrusion detection (IDS) and automated mitigation firewall (IPS)</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button id="resetBtn" class="btn btn-outline-light">
+                        <i class="fa-solid fa-rotate-left me-1"></i> Reset State
+                    </button>
+                    <button id="retrainModelsBtn" class="btn btn-cyan">
+                        <i class="fa-solid fa-calculator me-1"></i> Retrain & Benchmark ML
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Real-Time Counters -->
+    <div class="col-md-3">
+        <div class="card p-4 text-center">
+            <span class="stat-card-label"><i class="fa-solid fa-arrow-up-9-1 text-cyan"></i> Traffic Volume</span>
+            <h2 id="ppsValue" class="stat-card-value my-2" style="color: var(--accent-cyan);">0</h2>
+            <small class="text-secondary">Packets Per Second (PPS)</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-4 text-center">
+            <span class="stat-card-label"><i class="fa-solid fa-gauge text-cyan"></i> Bandwidth Capacity</span>
+            <h2 id="bpsValue" class="stat-card-value my-2" style="color: var(--accent-emerald);">0.00 MB</h2>
+            <small class="text-secondary">Data Volume Rate (BPS)</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-4 text-center">
+            <span class="stat-card-label"><i class="fa-solid fa-skull-crossbones text-cyan"></i> Anomaly Score</span>
+            <h2 id="anomalyValue" class="stat-card-value my-2" style="color: var(--accent-amber);">0.00</h2>
+            <small class="text-secondary">ML Threat Likelihood Ratio</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-4 text-center">
+            <span class="stat-card-label"><i class="fa-solid fa-shield-halved text-cyan"></i> Security Verdict</span>
+            <div class="my-2">
+                <span id="threatValue" class="badge bg-success fs-5 py-2 px-3">Normal</span>
+            </div>
+            <small class="text-secondary">Mapped Detection Signature</small>
+        </div>
+    </div>
+
+    <!-- Main Workspace Grid -->
+    <div class="col-lg-8">
+        <!-- Live Visual Graphs -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card p-4 h-100">
+                    <h5 class="fw-bold mb-3"><i class="fa-solid fa-chart-line text-cyan"></i> Packets Per Second (PPS)</h5>
+                    <canvas id="ppsChart" style="max-height: 200px;"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-4 h-100">
+                    <h5 class="fw-bold mb-3"><i class="fa-solid fa-chart-area text-cyan"></i> ML Anomaly Score Trace</h5>
+                    <canvas id="anomalyChart" style="max-height: 200px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Retraining & Benchmarking Panel (Dynamic output) -->
+        <div class="card p-4 mt-4" id="benchmarkingCard">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0"><i class="fa-solid fa-square-poll-vertical text-cyan"></i> ML Classifier Benchmarking Suite</h5>
+                <span class="badge bg-dark-cyan text-cyan">Multi-Class Calibration</span>
+            </div>
+            <p class="text-secondary small">
+                Retrain the 4 built-in classifiers in parallel to compare evaluation statistics on synthetic features. Confusion matrices update automatically below.
+            </p>
+            <div id="mlSpinner" class="text-center py-4" style="display: none;">
+                <div class="spinner-border text-cyan mb-2" role="status"></div>
+                <p class="text-secondary font-monospace small">Running parallel fitting for RF, DT, LR, and SVM classifiers...</p>
+            </div>
+            <div id="mlMetricsContainer" style="display: none;">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover border-color align-middle" style="font-size: 0.85rem;">
+                        <thead>
+                            <tr class="text-cyan">
+                                <th>Algorithm</th>
+                                <th>Accuracy</th>
+                                <th>Precision (macro)</th>
+                                <th>Recall (macro)</th>
+                                <th>F1-Score (macro)</th>
+                                <th>State</th>
+                            </tr>
+                        </thead>
+                        <tbody id="metricsTableBody" class="text-secondary">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Confusion Matrices Grid -->
+                <h6 class="fw-bold mt-4 mb-3 text-white"><i class="fa-solid fa-grid-4 text-cyan me-1"></i> Class Prediction Confusion Matrices</h6>
+                <div class="row g-3" id="confusionMatricesGrid">
+                    <!-- Dynamic rendering of 4 tables -->
+                </div>
+            </div>
+            <div id="mlNotice" class="alert alert-info py-2 px-3 small mb-0">
+                <i class="fa-solid fa-circle-info me-1"></i> Click <strong>Retrain & Benchmark ML</strong> above to view accuracies and confusion matrices.
+            </div>
+        </div>
+
+        <!-- Active Intrusion Prevention System (IPS) Policy Console -->
+        <div class="card p-4 mt-4">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-firewall text-rose"></i> Automated IPS Mitigation Policy</h5>
+            <div id="noMitigationAlert" class="alert alert-secondary py-3 text-center mb-0">
+                <i class="fa-solid fa-shield-virus fa-2x mb-2 text-secondary"></i>
+                <p class="mb-0 small">No active attack detected. IPS Firewall rule generator is idle.</p>
+            </div>
+            <div id="mitigationActivePanel" style="display: none;">
+                <div class="alert alert-success d-flex align-items-center gap-3 mb-4">
+                    <div class="fs-2"><i class="fa-solid fa-circle-check text-success"></i></div>
+                    <div>
+                        <strong class="text-white">Mitigation Applied!</strong><br>
+                        <span id="mitigationSuccessMessage" class="small">Detected attacker vectors blocked successfully. Baseline normal traffic stabilized.</span>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-white small"><i class="fa-brands fa-linux text-cyan me-1"></i> Option A: Linux Netfilter (iptables)</h6>
+                        <div class="position-relative">
+                            <pre class="bg-dark p-3 rounded text-secondary font-monospace small" id="iptablesCode" style="max-height: 180px; overflow-y: auto; font-size: 0.75rem; border: 1px solid var(--border-color);"></pre>
+                            <button class="btn btn-sm btn-secondary position-absolute top-0 end-0 m-2 py-1 px-2" onclick="copyRule('iptablesCode')"><i class="fa-solid fa-copy"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-white small"><i class="fa-brands fa-windows text-cyan me-1"></i> Option B: Windows Advanced Firewall (netsh)</h6>
+                        <div class="position-relative">
+                            <pre class="bg-dark p-3 rounded text-secondary font-monospace small" id="netshCode" style="max-height: 180px; overflow-y: auto; font-size: 0.75rem; border: 1px solid var(--border-color);"></pre>
+                            <button class="btn btn-sm btn-secondary position-absolute top-0 end-0 m-2 py-1 px-2" onclick="copyRule('netshCode')"><i class="fa-solid fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+                    <span class="text-secondary small font-monospace"><i class="fa-solid fa-network-wired text-cyan"></i> Rules generated automatically for blocked nodes</span>
+                    <a href="/api/download-report" class="btn btn-cyan btn-sm">
+                        <i class="fa-solid fa-download me-1"></i> Download Incident Forensic Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Sidebar Controls -->
+    <div class="col-lg-4">
+        <!-- Attack Simulator Control -->
+        <div class="card p-4 h-100 d-flex flex-column">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-triangle-exclamation text-rose"></i> Threat Vector Simulator</h5>
+            <p class="text-secondary small">
+                Simulate various Distributed Denial of Service (DDoS) attack vectors to test classification accuracy and rule responses.
+            </p>
+            <div class="mb-3">
+                <label for="simulationAttackSelect" class="form-label stat-card-label">Select Attack Signature</label>
+                <select id="simulationAttackSelect" class="form-select text-white">
+                    <option value="syn">SYN Flood (L4 - Volumetric Spoofed)</option>
+                    <option value="udp">UDP Flood (L4 - High Bandwidth Payload)</option>
+                    <option value="http">HTTP GET Flood (L7 - Application Layer Botnet)</option>
+                    <option value="dns">DNS Amplification (L7 - Reflective Payload)</option>
+                </select>
+            </div>
+            <div class="d-grid gap-2 mb-4">
+                <button id="startSimBtn" class="btn btn-danger btn-lg shadow-danger">
+                    <i class="fa-solid fa-bolt me-1"></i> Launch Attack Stream
+                </button>
+                <button id="stopSimBtn" class="btn btn-secondary btn-lg" style="display: none;">
+                    <i class="fa-solid fa-hand-slash me-1"></i> Terminate Attack
+                </button>
+                <button id="mitigateBtn" class="btn btn-cyan btn-lg" style="display: none;">
+                    <i class="fa-solid fa-shield-halved me-1"></i> Trigger Active IPS Defense
+                </button>
+            </div>
+
+            <!-- Active Classifier Controller -->
+            <hr class="border-color my-3">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-gears text-cyan"></i> Active Detector Core</h5>
+            <p class="text-secondary small">
+                Choose the classifier executing real-time classifications. Toggle on-the-fly to compare model thresholds.
+            </p>
+            <div class="d-flex flex-column gap-2 mb-4">
+                <div class="form-check p-3 rounded border border-color" style="background: rgba(20, 28, 48, 0.75);">
+                    <input class="form-check-input ms-0 me-2" type="radio" name="activeModelRadio" id="modelRadioRF" value="rf" checked>
+                    <label class="form-check-label text-white fw-bold" for="modelRadioRF">
+                        <i class="fa-solid fa-tree text-cyan me-1"></i> Random Forest
+                    </label>
+                </div>
+                <div class="form-check p-3 rounded border border-color" style="background: rgba(20, 28, 48, 0.75);">
+                    <input class="form-check-input ms-0 me-2" type="radio" name="activeModelRadio" id="modelRadioDT" value="dt">
+                    <label class="form-check-label text-white fw-bold" for="modelRadioDT">
+                        <i class="fa-solid fa-diagram-successor text-cyan me-1"></i> Decision Tree
+                    </label>
+                </div>
+                <div class="form-check p-3 rounded border border-color" style="background: rgba(20, 28, 48, 0.75);">
+                    <input class="form-check-input ms-0 me-2" type="radio" name="activeModelRadio" id="modelRadioLR" value="lr">
+                    <label class="form-check-label text-white fw-bold" for="modelRadioLR">
+                        <i class="fa-solid fa-chart-line text-cyan me-1"></i> Logistic Regression
+                    </label>
+                </div>
+                <div class="form-check p-3 rounded border border-color" style="background: rgba(20, 28, 48, 0.75);">
+                    <input class="form-check-input ms-0 me-2" type="radio" name="activeModelRadio" id="modelRadioSVM" value="svm">
+                    <label class="form-check-label text-white fw-bold" for="modelRadioSVM">
+                        <i class="fa-solid fa-vector-square text-cyan me-1"></i> SVM Classifier
+                    </label>
+                </div>
+            </div>
+
+            <!-- Blocked Attacker Log -->
+            <hr class="border-color my-3">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-user-slash text-rose"></i> Active Blocked IPs</h5>
+            <div id="blockedIPsContainer" class="alert-log-container text-secondary" style="max-height: 150px; font-size: 0.75rem;">
+                No nodes blocked currently.
+            </div>
+            
+            <!-- Manual IP Blocking Form -->
+            <div class="mt-3">
+                <div class="input-group input-group-sm">
+                    <input type="text" id="manualIpInput" class="form-control" placeholder="Manual IP Address">
+                    <button class="btn btn-cyan btn-sm" id="manualBlockBtn">Block</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Log Console -->
+    <div class="col-12 mt-4">
+        <div class="card p-4">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-rectangle-list text-cyan"></i> Intrusion Alert Log</h5>
+            <div id="alertLog" class="alert-log-container text-secondary">
+                Sentinel core initialized. System idle...
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const MAX_POINTS = 25;
+    let ppsData = [], anomalyData = [], labels = [];
+    let alertCount = 0;
+    let isAttacking = false;
+    let selectedModel = "{{ active_model }}";
+
+    // Chart Options Definitions
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 0 },
+        scales: {
+            x: { display: false, grid: { display: false } },
+            y: { 
+                beginAtZero: true, 
+                grid: { color: 'rgba(255,255,255,0.05)' },
+                ticks: { color: '#94a3b8', font: { family: 'Fira Code' } }
+            }
+        },
+        plugins: { 
+            legend: { display: false }
+        }
+    };
+
+    // Initialize Charts
+    const ppsCtx = document.getElementById('ppsChart').getContext('2d');
+    const ppsChart = new Chart(ppsCtx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: ppsData,
+                borderColor: '#06b6d4',
+                backgroundColor: 'rgba(6, 182, 212, 0.05)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.35,
+                pointRadius: 0
+            }]
+        },
+        options: chartOptions
+    });
+
+    const anomalyCtx = document.getElementById('anomalyChart').getContext('2d');
+    const anomalyChart = new Chart(anomalyCtx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: anomalyData,
+                borderColor: '#fbbf24',
+                backgroundColor: 'rgba(245, 158, 11, 0.05)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.35,
+                pointRadius: 0
+            }]
+        },
+        options: {
+            ...chartOptions,
+            scales: {
+                ...chartOptions.scales,
+                y: { ...chartOptions.scales.y, min: 0, max: 1 }
+            }
+        }
+    });
+
+    function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toLocaleString();
+    }
+
+    // Set Active Radio Button on start
+    document.addEventListener("DOMContentLoaded", () => {
+        const rad = document.querySelector(`input[name="activeModelRadio"][value="${selectedModel}"]`);
+        if (rad) rad.checked = true;
+    });
+
+    // Handle Active Model Switch
+    document.querySelectorAll('input[name="activeModelRadio"]').forEach(radio => {
+        radio.addEventListener('change', async (e) => {
+            const m = e.target.value;
+            try {
+                const res = await fetch('/api/models/active', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: m })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    selectedModel = m;
+                    logSystemMessage(`Active threat classifier core switched to <strong>${m.toUpperCase()}</strong>.`);
+                }
+            } catch (err) {
+                console.error("Error toggling model active core:", err);
+            }
+        });
+    });
+
+    // Helper to log console messages
+    function logSystemMessage(msg) {
+        const consoleEl = document.getElementById('alertLog');
+        const time = new Date().toLocaleTimeString();
+        if (alertCount === 0 && consoleEl.innerHTML.includes("Sentinel core initialized")) {
+            consoleEl.innerHTML = "";
+        }
+        alertCount++;
+        consoleEl.innerHTML = `<div class="mb-1"><span class="text-cyan">[${time}]</span> ${msg}</div>` + consoleEl.innerHTML;
+    }
+
+    // Copy rules
+    function copyRule(id) {
+        const text = document.getElementById(id).textContent;
+        navigator.clipboard.writeText(text);
+        alert("Commands copied to clipboard!");
+    }
+
+    // Blocklist IPs update UI
+    async function updateBlockedListUI() {
+        try {
+            const res = await fetch('/api/attack-stats');
+            const data = await res.json();
+            
+            const blockedContainer = document.getElementById('blockedIPsContainer');
+            if (data.blocked_ips && data.blocked_ips.length > 0) {
+                blockedContainer.innerHTML = '';
+                data.blocked_ips.forEach(ip => {
+                    blockedContainer.innerHTML += `
+                        <div class="d-flex justify-content-between align-items-center mb-1 pb-1 border-bottom border-color">
+                            <span class="text-white font-monospace">${ip}</span>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="whitelistIP('${ip}')" style="font-size: 0.65rem;">Whitelist</button>
+                        </div>
+                    `;
+                });
+            } else {
+                blockedContainer.innerHTML = 'No nodes blocked currently.';
+            }
+        } catch (e) {
+            console.error("Error refreshing active block list:", e);
+        }
+    }
+
+    // Whitelist IP
+    async function whitelistIP(ip) {
+        try {
+            const res = await fetch('/api/whitelist', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ip: ip })
+            });
+            const data = await res.json();
+            if (data.success) {
+                logSystemMessage(`Whitelisted node IP: <strong>${ip}</strong>.`);
+                updateBlockedListUI();
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    // Manual Block IP
+    document.getElementById('manualBlockBtn').addEventListener('click', async () => {
+        const ipInput = document.getElementById('manualIpInput');
+        const ip = ipInput.value.trim();
+        if (!ip) return;
+        
+        try {
+            const res = await fetch('/api/block-ip', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ip: ip })
+            });
+            const data = await res.json();
+            if (data.success) {
+                logSystemMessage(`Manually blocked IP node: <strong>${ip}</strong>.`);
+                ipInput.value = '';
+                updateBlockedListUI();
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    });
+
+    // Fetch live telemetry
+    async function fetchTraffic() {
+        try {
+            const res = await fetch('/api/traffic');
+            const data = await res.json();
+
+            if (data.error) return;
+
+            // Update stats
+            document.getElementById('ppsValue').textContent = formatNumber(data.pps);
+            document.getElementById('bpsValue').textContent = (data.bps / 1e6).toFixed(2) + ' MB';
+            document.getElementById('anomalyValue').textContent = data.anomaly_score.toFixed(3);
+
+            const threatEl = document.getElementById('threatValue');
+            threatEl.textContent = data.threat_level;
+            
+            if (data.threat_level === 'Normal') {
+                threatEl.className = 'badge bg-success fs-5 py-2 px-3';
+            } else if (data.threat_level.includes('Warning')) {
+                threatEl.className = 'badge bg-warning text-dark fs-5 py-2 px-3';
+            } else {
+                threatEl.className = 'badge bg-danger fs-5 py-2 px-3';
+            }
+
+            // Mitigation control panels
+            if (data.is_simulating) {
+                if (data.is_mitigated) {
+                    document.getElementById('noMitigationAlert').style.display = 'none';
+                    document.getElementById('mitigationActivePanel').style.display = 'block';
+                    document.getElementById('mitigateBtn').style.display = 'none';
+                } else {
+                    if (data.threat_level !== 'Normal') {
+                        document.getElementById('mitigateBtn').style.display = 'block';
+                    }
+                    document.getElementById('noMitigationAlert').style.display = 'block';
+                    document.getElementById('mitigationActivePanel').style.display = 'none';
+                }
+            } else {
+                document.getElementById('noMitigationAlert').style.display = 'block';
+                document.getElementById('mitigationActivePanel').style.display = 'none';
+                document.getElementById('mitigateBtn').style.display = 'none';
+            }
+
+            // Update charts
+            const time = data.timestamp;
+            labels.push(time);
+            ppsData.push(data.pps);
+            anomalyData.push(data.anomaly_score);
+
+            if (labels.length > MAX_POINTS) {
+                labels.shift();
+                ppsData.shift();
+                anomalyData.shift();
+            }
+
+            ppsChart.update('none');
+            anomalyChart.update('none');
+
+            // Log Alert
+            if (data.threat_level !== 'Normal' && !data.is_mitigated) {
+                logSystemMessage(`🚨 <span class="text-danger">Threat Alert:</span> Active <strong>${data.threat_level}</strong> vector detected. Likelihood: <strong>${data.anomaly_score.toFixed(3)}</strong>, PPS: <strong>${formatNumber(data.pps)}</strong>.`);
+            }
+        } catch (e) {
+            console.error('Fetch error:', e);
+        }
+    }
+
+    // Start simulation
+    document.getElementById('startSimBtn').addEventListener('click', async () => {
+        const attackSelect = document.getElementById('simulationAttackSelect');
+        const attackType = attackSelect.value;
+        
+        await fetch('/api/simulate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ active: true, attack_type: attackType })
+        });
+        
+        isAttacking = true;
+        document.getElementById('startSimBtn').style.display = 'none';
+        document.getElementById('stopSimBtn').style.display = 'block';
+        document.getElementById('noMitigationAlert').style.display = 'block';
+        document.getElementById('mitigationActivePanel').style.display = 'none';
+        logSystemMessage(`⚡ DDoS simulation trigger initiated: <strong>${attackType.toUpperCase()} Flood</strong> vector launched.`);
+        updateBlockedListUI();
+    });
+
+    // Stop simulation
+    document.getElementById('stopSimBtn').addEventListener('click', async () => {
+        await fetch('/api/simulate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ active: false })
+        });
+        isAttacking = false;
+        document.getElementById('startSimBtn').style.display = 'block';
+        document.getElementById('stopSimBtn').style.display = 'none';
+        document.getElementById('mitigateBtn').style.display = 'none';
+        document.getElementById('noMitigationAlert').style.display = 'block';
+        document.getElementById('mitigationActivePanel').style.display = 'none';
+        logSystemMessage(`⏹️ DDoS Simulation terminated. Network normalized.`);
+        updateBlockedListUI();
+    });
+
+    // Mitigate
+    document.getElementById('mitigateBtn').addEventListener('click', async () => {
+        document.getElementById('mitigateBtn').disabled = true;
+        document.getElementById('mitigateBtn').innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Deploying rules...';
+
+        try {
+            const res = await fetch('/api/mitigate', { method: 'POST' });
+            const data = await res.json();
+
+            document.getElementById('mitigateBtn').disabled = false;
+            document.getElementById('mitigateBtn').innerHTML = '<i class="fa-solid fa-shield-halved me-1"></i> Trigger Active IPS Defense';
+
+            if (data.success) {
+                document.getElementById('noMitigationAlert').style.display = 'none';
+                document.getElementById('mitigationActivePanel').style.display = 'block';
+                document.getElementById('mitigateBtn').style.display = 'none';
+
+                // Set rules
+                document.getElementById('iptablesCode').textContent = data.rules.iptables;
+                document.getElementById('netshCode').textContent = data.rules.netsh;
+                
+                logSystemMessage(`🛡️ <span class="text-success">IPS Active:</span> Automated rules deployed. Blocked <strong>${data.blocked_ips}</strong> IP nodes. Packets drops: <strong>${formatNumber(data.total_blocked_packets)}</strong>.`);
+                updateBlockedListUI();
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('mitigateBtn').disabled = false;
+            document.getElementById('mitigateBtn').innerHTML = '<i class="fa-solid fa-shield-halved me-1"></i> Trigger Active IPS Defense';
+        }
+    });
+
+    // Reset System
+    document.getElementById('resetBtn').addEventListener('click', async () => {
+        await fetch('/api/reset', { method: 'POST' });
+
+        document.getElementById('startSimBtn').style.display = 'block';
+        document.getElementById('stopSimBtn').style.display = 'none';
+        document.getElementById('mitigateBtn').style.display = 'none';
+        document.getElementById('noMitigationAlert').style.display = 'block';
+        document.getElementById('mitigationActivePanel').style.display = 'none';
+        document.getElementById('ppsValue').textContent = '0';
+        document.getElementById('bpsValue').textContent = '0.00 MB';
+        document.getElementById('anomalyValue').textContent = '0.00';
+        document.getElementById('threatValue').textContent = 'Normal';
+        document.getElementById('threatValue').className = 'badge bg-success fs-5 py-2 px-3';
+
+        labels.length = 0;
+        ppsData.length = 0;
+        anomalyData.length = 0;
+        ppsChart.update();
+        anomalyChart.update();
+
+        alertCount = 0;
+        isAttacking = false;
+        logSystemMessage("Sentinel security state reset completely. Sensor online.");
+        updateBlockedListUI();
+    });
+
+    // Helper to render confusion matrices
+    function renderConfusionMatrix(matrix, containerId, modelName) {
+        const classes = ["Normal", "SYN", "UDP", "HTTP", "DNS"];
+        let html = `
+            <div class="col-md-6 mb-3">
+                <div class="p-3 rounded border border-color" style="background: rgba(255,255,255,0.015);">
+                    <h6 class="text-white text-center fw-bold small mb-2">${modelName.toUpperCase()} Confusion Matrix</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm cm-table text-secondary border-0 mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="border-0 bg-transparent"></th>
+                                    ${classes.map(c => `<th class="cm-header border-0 bg-transparent text-cyan">${c}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+        `;
+
+        for (let i = 0; i < matrix.length; i++) {
+            html += `
+                <tr>
+                    <td class="cm-label border-0 text-white fw-bold pe-1">${classes[i]}</td>
+            `;
+            for (let j = 0; j < matrix[i].length; j++) {
+                const val = matrix[i][j];
+                let cellClass = "cm-zero";
+                if (val > 0 && val < 10) cellClass = "cm-low";
+                else if (val >= 10 && val < 40) cellClass = "cm-med";
+                else if (val >= 40) cellClass = "cm-high";
+
+                html += `<td class="cm-cell border-0 ${cellClass}">${val}</td>`;
+            }
+            html += `</tr>`;
+        }
+
+        html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById(containerId).innerHTML += html;
+    }
+
+    // Model Retraining & Benchmarking click handler
+    document.getElementById('retrainModelsBtn').addEventListener('click', async () => {
+        document.getElementById('mlNotice').style.display = 'none';
+        document.getElementById('mlMetricsContainer').style.display = 'none';
+        document.getElementById('mlSpinner').style.display = 'block';
+        document.getElementById('retrainModelsBtn').disabled = true;
+        document.getElementById('retrainModelsBtn').innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Retraining...';
+
+        try {
+            const res = await fetch('/api/models/train', { method: 'POST' });
+            const data = await res.json();
+
+            document.getElementById('mlSpinner').style.display = 'none';
+            document.getElementById('retrainModelsBtn').disabled = false;
+            document.getElementById('retrainModelsBtn').innerHTML = '<i class="fa-solid fa-calculator me-1"></i> Retrain & Benchmark ML';
+
+            if (data.success) {
+                const tbody = document.getElementById('metricsTableBody');
+                tbody.innerHTML = '';
+                
+                const grid = document.getElementById('confusionMatricesGrid');
+                grid.innerHTML = '';
+
+                // Model mapping descriptors
+                const names = {
+                    'rf': 'Random Forest',
+                    'dt': 'Decision Tree',
+                    'lr': 'Logistic Regression',
+                    'svm': 'SVM Classifier'
+                };
+
+                for (const [modelKey, modelMetrics] of Object.entries(data.metrics)) {
+                    // Populate Table Row
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="text-white fw-bold"><i class="fa-solid fa-shield-halved text-cyan me-1"></i> ${names[modelKey]}</td>
+                            <td class="font-monospace">${(modelMetrics.accuracy * 100).toFixed(2)}%</td>
+                            <td class="font-monospace">${(modelMetrics.precision * 100).toFixed(2)}%</td>
+                            <td class="font-monospace">${(modelMetrics.recall * 100).toFixed(2)}%</td>
+                            <td class="font-monospace">${(modelMetrics.f1_score * 100).toFixed(2)}%</td>
+                            <td><span class="badge bg-dark-green text-green px-2 py-1 font-monospace">Trained & Active</span></td>
+                        </tr>
+                    `;
+
+                    // Render Confusion Matrix
+                    renderConfusionMatrix(modelMetrics.confusion_matrix, 'confusionMatricesGrid', names[modelKey]);
+                }
+
+                document.getElementById('mlMetricsContainer').style.display = 'block';
+                logSystemMessage("⚡ Model training successfully triggered. Benchmarked statistics and Confusion Matrices compiled inside Dashboard Console.");
+            }
+        } catch (e) {
+            console.error("Retraining error:", e);
+            document.getElementById('mlSpinner').style.display = 'none';
+            document.getElementById('retrainModelsBtn').disabled = false;
+            document.getElementById('retrainModelsBtn').innerHTML = '<i class="fa-solid fa-calculator me-1"></i> Retrain & Benchmark ML';
+            document.getElementById('mlNotice').style.display = 'block';
+            alert("Model training failed. Please check backend network console.");
+        }
+    });
+
+    // Start polling
+    setInterval(fetchTraffic, 1000);
+    fetchTraffic();
+    updateBlockedListUI();
+</script>
+{% endblock %}

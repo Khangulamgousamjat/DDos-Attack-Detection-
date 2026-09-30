@@ -1,0 +1,436 @@
+/* DDoS Sentinel - Custom Cybersecurity Dark Design System */
+
+:root {
+    --bg-dark: #070a13;
+    --bg-card: rgba(16, 22, 35, 0.85);
+    --border-color: rgba(255, 255, 255, 0.12);
+    --border-glow: rgba(6, 182, 212, 0.25);
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --accent-cyan: #06b6d4;
+    --accent-emerald: #10b981;
+    --accent-rose: #f43f5e;
+    --accent-amber: #f59e0b;
+    --accent-purple: #8b5cf6;
+}
+
+/* Base Styles & Global Typography Contrast */
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary) !important;
+    font-family: 'Poppins', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+p {
+    color: var(--text-primary);
+}
+
+.text-secondary {
+    color: #cbd5e1 !important;
+}
+
+.text-muted {
+    color: #94a3b8 !important;
+}
+
+small, .small {
+    color: #cbd5e1;
+}
+
+ul, ol {
+    color: #cbd5e1;
+}
+
+li {
+    color: #cbd5e1;
+}
+
+/* Glassmorphism Cards */
+.card {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 14px !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(6, 182, 212, 0.35) !important;
+    box-shadow: 0 15px 35px rgba(6, 182, 212, 0.12);
+}
+
+.glass-card {
+    background: rgba(15, 23, 42, 0.7) !important;
+}
+
+/* Hero Section */
+.hero-card {
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(10, 15, 30, 0.98) 100%) !important;
+    border: 1px solid rgba(6, 182, 212, 0.25) !important;
+    box-shadow: 0 20px 50px rgba(6, 182, 212, 0.1);
+}
+
+.hero-card .lead {
+    color: #e2e8f0 !important;
+}
+
+/* Custom Cyber Buttons */
+.btn {
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.6rem 1.4rem;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-cyan {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    color: #ffffff !important;
+    border: none;
+}
+
+.btn-cyan:hover {
+    background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+}
+
+.shadow-cyan {
+    box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
+    color: #ffffff !important;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff !important;
+    transform: translateY(-2px);
+}
+
+.btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff !important;
+}
+
+.btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #ffffff !important;
+}
+
+/* Architecture Flow Nodes - High Visibility Enhancements */
+.arch-node {
+    background: rgba(20, 28, 48, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.arch-node h6 {
+    color: #ffffff !important;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    margin-top: 8px;
+    margin-bottom: 6px;
+    letter-spacing: -0.2px;
+}
+
+.arch-node small {
+    color: #cbd5e1 !important;
+    font-size: 0.82rem !important;
+    font-weight: 500;
+    line-height: 1.35;
+    display: block;
+}
+
+.arch-node:hover {
+    background: rgba(6, 182, 212, 0.12) !important;
+    border-color: var(--accent-cyan) !important;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(6, 182, 212, 0.2);
+}
+
+.arch-node.highlight {
+    border-color: rgba(139, 92, 246, 0.45) !important;
+    background: rgba(139, 92, 246, 0.12) !important;
+}
+
+.arch-node.highlight h6 {
+    color: #ffffff !important;
+}
+
+.arch-node.highlight small {
+    color: #e2e8f0 !important;
+}
+
+.arch-node.highlight:hover {
+    border-color: var(--accent-purple) !important;
+    background: rgba(139, 92, 246, 0.22) !important;
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.25);
+}
+
+.arch-node.alert-node {
+    border-color: rgba(244, 63, 94, 0.45) !important;
+    background: rgba(244, 63, 94, 0.1) !important;
+}
+
+.arch-node.alert-node h6 {
+    color: #ffffff !important;
+}
+
+.arch-node.alert-node small {
+    color: #fecdd3 !important;
+}
+
+.arch-node.alert-node:hover {
+    border-color: var(--accent-rose) !important;
+    background: rgba(244, 63, 94, 0.22) !important;
+    box-shadow: 0 8px 25px rgba(244, 63, 94, 0.25);
+}
+
+.arch-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    color: #38bdf8;
+    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4));
+}
+
+.arch-node.highlight .arch-icon {
+    color: #a78bfa;
+    filter: drop-shadow(0 0 10px rgba(167, 139, 250, 0.4));
+}
+
+.arch-node.alert-node .arch-icon {
+    color: #fb7185;
+    filter: drop-shadow(0 0 10px rgba(251, 113, 133, 0.4));
+}
+
+.arch-connector {
+    font-size: 1.35rem;
+    color: var(--accent-cyan);
+    opacity: 0.9;
+    filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.4));
+}
+
+/* Glowing Attack Vectors Cards */
+.card-glow-blue {
+    border-color: rgba(59, 130, 246, 0.2) !important;
+}
+.card-glow-blue:hover {
+    border-color: rgba(59, 130, 246, 0.5) !important;
+    box-shadow: 0 15px 35px rgba(59, 130, 246, 0.15);
+}
+
+.card-glow-emerald {
+    border-color: rgba(16, 185, 129, 0.2) !important;
+}
+.card-glow-emerald:hover {
+    border-color: rgba(16, 185, 129, 0.5) !important;
+    box-shadow: 0 15px 35px rgba(16, 185, 129, 0.15);
+}
+
+.card-glow-purple {
+    border-color: rgba(139, 92, 246, 0.2) !important;
+}
+.card-glow-purple:hover {
+    border-color: rgba(139, 92, 246, 0.5) !important;
+    box-shadow: 0 15px 35px rgba(139, 92, 246, 0.15);
+}
+
+.card-glow-amber {
+    border-color: rgba(245, 158, 11, 0.2) !important;
+}
+.card-glow-amber:hover {
+    border-color: rgba(245, 158, 11, 0.5) !important;
+    box-shadow: 0 15px 35px rgba(245, 158, 11, 0.15);
+}
+
+.vector-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: #ffffff;
+}
+
+.vector-icon.bg-blue { background: rgba(59, 130, 246, 0.25); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.4); }
+.vector-icon.bg-green { background: rgba(16, 185, 129, 0.25); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); }
+.vector-icon.bg-purple { background: rgba(139, 92, 246, 0.25); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4); }
+.vector-icon.bg-yellow { background: rgba(245, 158, 11, 0.25); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.4); }
+
+/* High-contrast Badges for Attack Types */
+.bg-dark-cyan { background: rgba(6, 182, 212, 0.18) !important; color: #38bdf8 !important; border: 1px solid rgba(6, 182, 212, 0.4) !important; }
+.bg-dark-green { background: rgba(16, 185, 129, 0.18) !important; color: #34d399 !important; border: 1px solid rgba(16, 185, 129, 0.4) !important; }
+.bg-dark-purple { background: rgba(139, 92, 246, 0.18) !important; color: #c084fc !important; border: 1px solid rgba(139, 92, 246, 0.4) !important; }
+.bg-dark-yellow { background: rgba(245, 158, 11, 0.18) !important; color: #fde047 !important; border: 1px solid rgba(245, 158, 11, 0.4) !important; }
+
+/* Custom Form and Table Controls */
+.form-control, .form-select {
+    background: rgba(15, 23, 42, 0.8) !important;
+    border: 1px solid var(--border-color) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 0.6rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--accent-cyan) !important;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.35) !important;
+    color: #ffffff !important;
+}
+
+.form-control::placeholder {
+    color: #94a3b8 !important;
+}
+
+.form-check-label {
+    color: #ffffff !important;
+}
+
+/* Tables with High Text Contrast */
+.table {
+    border-color: var(--border-color) !important;
+    color: #e2e8f0 !important;
+}
+
+.table th {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    padding: 0.85rem 1rem !important;
+    color: #38bdf8 !important;
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.table td {
+    padding: 0.85rem 1rem !important;
+    background-color: transparent !important;
+    color: #cbd5e1 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.table-hover tbody tr:hover td {
+    background-color: rgba(6, 182, 212, 0.08) !important;
+    color: #ffffff !important;
+}
+
+/* Metrics and Gauges Styling */
+.stat-card-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #cbd5e1 !important;
+}
+
+.stat-card-value {
+    font-family: 'Fira Code', monospace;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+/* Alert log terminal aesthetics */
+.alert-log-container {
+    background: #090d16 !important;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    color: #e2e8f0 !important;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #070a13;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+/* Animations */
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+    animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Confusion Matrix Style Rules */
+.cm-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.cm-header {
+    font-size: 0.75rem;
+    text-align: center;
+    font-weight: 700;
+    color: #38bdf8 !important;
+}
+
+.cm-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #ffffff !important;
+}
+
+.cm-cell {
+    text-align: center;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 0.25rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+}
+
+/* Multi-level CM cell shading colors */
+.cm-cell.cm-zero { background-color: rgba(255, 255, 255, 0.04) !important; color: rgba(255, 255, 255, 0.35) !important; }
+.cm-cell.cm-low { background-color: rgba(6, 182, 212, 0.25) !important; color: #a5f3fc !important; }
+.cm-cell.cm-med { background-color: rgba(6, 182, 212, 0.45) !important; color: #22d3ee !important; }
+.cm-cell.cm-high { background-color: rgba(6, 182, 212, 0.75) !important; color: #ffffff !important; box-shadow: inset 0 0 8px rgba(6, 182, 212, 0.6); }
+
+/* Accent Text Utilities */
+.text-cyan { color: #22d3ee !important; }
+.text-rose { color: #fb7185 !important; }
+.text-green { color: #34d399 !important; }
+.text-purple { color: #c084fc !important; }
+.text-yellow { color: #fde047 !important; }

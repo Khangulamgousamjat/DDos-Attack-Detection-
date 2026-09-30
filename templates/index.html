@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row g-4 justify-content-center px-lg-5">
+    <!-- Hero Header -->
+    <div class="col-12 mt-3">
+        <div class="card p-5 hero-card overflow-hidden position-relative border-0 shadow-lg">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold mb-2">DDoS Attack Detection & Prevention</h1>
+                    <p class="lead text-secondary mb-4 fs-5" style="max-width: 700px;">
+                        An academic-grade, intelligence-driven intrusion prevention appliance powered by multi-class machine learning classifiers and automated firewall policy generators.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="/dashboard" class="btn btn-cyan btn-lg px-4 shadow-cyan" id="hero-btn-dashboard">
+                            <i class="fa-solid fa-gauge-high me-2"></i> Launch IPS Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Project Architecture -->
+    <div class="col-12 mt-5">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-white"><i class="fa-solid fa-diagram-project text-cyan"></i> System Process & Architecture</h2>
+            <p class="text-secondary fs-6">How the machine learning pipeline ingests traffic, models signatures, and deploys mitigation rules</p>
+        </div>
+        <div class="card p-4 glass-card">
+            <div class="row g-3 text-center align-items-center">
+                <div class="col-md-2">
+                    <div class="arch-node p-3 rounded">
+                        <div class="arch-icon"><i class="fa-solid fa-network-wired"></i></div>
+                        <h6 class="text-white fw-bold">Network Traffic</h6>
+                        <small class="text-secondary">Raw packet stream ingestion</small>
+                    </div>
+                </div>
+                <div class="col-md-1"><div class="arch-connector"><i class="fa-solid fa-chevron-right"></i></div></div>
+                <div class="col-md-2">
+                    <div class="arch-node p-3 rounded">
+                        <div class="arch-icon"><i class="fa-solid fa-calculator"></i></div>
+                        <h6 class="text-white fw-bold">Feature Miner</h6>
+                        <small class="text-secondary">Entropy & density metrics</small>
+                    </div>
+                </div>
+                <div class="col-md-1"><div class="arch-connector"><i class="fa-solid fa-chevron-right"></i></div></div>
+                <div class="col-md-2">
+                    <div class="arch-node p-3 rounded highlight">
+                        <div class="arch-icon"><i class="fa-solid fa-brain"></i></div>
+                        <h6 class="text-white fw-bold">ML Core</h6>
+                        <small class="text-secondary">4 Classifiers in parallel</small>
+                    </div>
+                </div>
+                <div class="col-md-1"><div class="arch-connector"><i class="fa-solid fa-chevron-right"></i></div></div>
+                <div class="col-md-2">
+                    <div class="arch-node p-3 rounded alert-node">
+                        <div class="arch-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <h6 class="text-white fw-bold">Mitigation Engine</h6>
+                        <small class="text-secondary">IP Block & rule generation</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attack Classification Taxonomy -->
+    <div class="col-12 mt-5">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-white"><i class="fa-solid fa-viruses text-rose"></i> Ingested DDoS Vectors</h2>
+            <p class="text-secondary fs-6">The system classifies incoming packets into discrete DDoS threat patterns</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card p-4 h-100 glass-card card-glow-blue">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="vector-icon bg-blue"><i class="fa-solid fa-rotate"></i></div>
+                        <span class="badge bg-dark-cyan text-cyan py-2 px-3 font-monospace">L4 Transport</span>
+                    </div>
+                    <h5 class="fw-bold text-white">SYN Flood</h5>
+                    <p class="text-secondary small">
+                        Exploits the TCP 3-Way Handshake by saturating the victim server with SYN packets. The attacker leaves connections "half-open" by ignoring subsequent SYN-ACK signals.
+                    </p>
+                    <ul class="text-secondary small ps-3 mb-0">
+                        <li>Extremely high PPS</li>
+                        <li>Low packet size (~64B)</li>
+                        <li>Massive IP flow count</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-4 h-100 glass-card card-glow-emerald">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="vector-icon bg-green"><i class="fa-solid fa-bolt"></i></div>
+                        <span class="badge bg-dark-green text-green py-2 px-3 font-monospace">L4 Transport</span>
+                    </div>
+                    <h5 class="fw-bold text-white">UDP Flood</h5>
+                    <p class="text-secondary small">
+                        Floods random ports on the victim host with stateless User Datagram Protocol packets. Forces the victim OS to search for listening apps and reply with ICMP "Destination Unreachable".
+                    </p>
+                    <ul class="text-secondary small ps-3 mb-0">
+                        <li>High Bandwidth (BPS)</li>
+                        <li>Large packet size (~1250B)</li>
+                        <li>Moderate attacker IP count</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-4 h-100 glass-card card-glow-purple">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="vector-icon bg-purple"><i class="fa-solid fa-globe"></i></div>
+                        <span class="badge bg-dark-purple text-purple py-2 px-3 font-monospace">L7 Application</span>
+                    </div>
+                    <h5 class="fw-bold text-white">HTTP Get Flood</h5>
+                    <p class="text-secondary small">
+                        Mimics legitimate user requests using a distributed botnet to send HTTP GET/POST queries. Exhausts web server application resources (CPU/RAM) through database fetches.
+                    </p>
+                    <ul class="text-secondary small ps-3 mb-0">
+                        <li>Moderate PPS and BPS</li>
+                        <li>Extremely dense flow counts</li>
+                        <li>Identified via high IP entropy</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-4 h-100 glass-card card-glow-amber">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="vector-icon bg-yellow"><i class="fa-solid fa-tower-broadcast"></i></div>
+                        <span class="badge bg-dark-yellow text-yellow py-2 px-3 font-monospace">L7 Reflection</span>
+                    </div>
+                    <h5 class="fw-bold text-white">DNS Amplification</h5>
+                    <p class="text-secondary small">
+                        A reflection attack where spoofed queries are sent to open DNS servers. The request has the victim's return IP, triggering amplified DNS replies back to the target.
+                    </p>
+                    <ul class="text-secondary small ps-3 mb-0">
+                        <li>Maximized bytes-per-packet</li>
+                        <li>Extremely high BPS</li>
+                        <li>Few distinct source IPs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Engineering Reference -->
+    <div class="col-lg-6 mt-5">
+        <h3 class="fw-bold mb-3"><i class="fa-solid fa-gears text-cyan"></i> Feature Extraction Engine</h3>
+        <p class="text-secondary small">
+            To enable reliable real-time classification, the system extracts high-order mathematical features from raw network logging windows. Binary packets are mapped into 5 core features:
+        </p>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover border-color align-middle" style="font-size: 0.85rem;">
+                <thead>
+                    <tr class="text-cyan">
+                        <th>Feature Name</th>
+                        <th>Formula / Extraction Method</th>
+                        <th>Target Behavior</th>
+                    </tr>
+                </thead>
+                <tbody class="text-secondary">
+                    <tr>
+                        <td class="text-white fw-bold">pps_mean</td>
+                        <td>Mean packets per 5-second sampling epoch</td>
+                        <td>Elevated on all volumetric attacks</td>
+                    </tr>
+                    <tr>
+                        <td class="text-white fw-bold">pps_std</td>
+                        <td>Standard deviation of packet frequency windows</td>
+                        <td>High variance on bursty attacks</td>
+                    </tr>
+                    <tr>
+                        <td class="text-white fw-bold">ip_entropy</td>
+                        <td>Shannon entropy log mapping of source IPs</td>
+                        <td>Peaks on highly spoofed botnets (SYN/HTTP)</td>
+                    </tr>
+                    <tr>
+                        <td class="text-white fw-bold">flow_density</td>
+                        <td>Packets Ingested / Active Session Flows</td>
+                        <td>Signals dense streams from few sources</td>
+                    </tr>
+                    <tr>
+                        <td class="text-white fw-bold">bytes_per_packet</td>
+                        <td>Bytes Ingested / Packets Ingested</td>
+                        <td>Flags DNS amplification vs small-packet SYN floods</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Machine Learning Benchmarking Highlighters -->
+    <div class="col-lg-6 mt-5">
+        <h3 class="fw-bold mb-3"><i class="fa-solid fa-square-poll-vertical text-cyan"></i> Multi-Model Classification Suite</h3>
+        <p class="text-secondary small">
+            Rather than relying on one classifier, the console benchmarks and tracks four algorithms simultaneously. The operator can choose the active prediction driver depending on real-time speeds:
+        </p>
+        <div class="row g-3">
+            <div class="col-6">
+                <div class="p-3 rounded h-100" style="background: rgba(20, 28, 48, 0.75); border: 1px solid rgba(255,255,255,0.14);">
+                    <h6 class="text-white fw-bold"><i class="fa-solid fa-tree text-cyan me-1"></i> Random Forest</h6>
+                    <small class="text-secondary">High-accuracy ensemble of decision trees. Excellent for robust non-linear boundaries. Default model.</small>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="p-3 rounded h-100" style="background: rgba(20, 28, 48, 0.75); border: 1px solid rgba(255,255,255,0.14);">
+                    <h6 class="text-white fw-bold"><i class="fa-solid fa-diagram-successor text-cyan me-1"></i> Decision Tree</h6>
+                    <small class="text-secondary">Extremely fast execution. Builds hierarchical rule sets. Easily explainable and highly efficient.</small>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="p-3 rounded h-100" style="background: rgba(20, 28, 48, 0.75); border: 1px solid rgba(255,255,255,0.14);">
+                    <h6 class="text-white fw-bold"><i class="fa-solid fa-chart-line text-cyan me-1"></i> Logistic Regression</h6>
+                    <small class="text-secondary">Linear probabilistic model. Superb baseline indicator, very lightweight, fast fitting speed.</small>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="p-3 rounded h-100" style="background: rgba(20, 28, 48, 0.75); border: 1px solid rgba(255,255,255,0.14);">
+                    <h6 class="text-white fw-bold"><i class="fa-solid fa-vector-square text-cyan me-1"></i> SVM Classifier</h6>
+                    <small class="text-secondary">Finds the optimal separating hyperplane in high dimensions. Highly generalized and robust.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
